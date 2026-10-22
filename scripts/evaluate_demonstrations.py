@@ -67,6 +67,9 @@ def evaluate(tasks: dict[str, dict]) -> dict[str, Any]:
     by_support: dict[int, dict[str, int]] = defaultdict(
         lambda: {"examples": 0, "top1_correct": 0, "top2_correct": 0, "fit_coverage": 0}
     )
+    by_output_shape: dict[str, dict[str, int]] = defaultdict(
+        lambda: {"examples": 0, "top1_correct": 0, "top2_correct": 0, "fit_coverage": 0}
+    )
     by_task: dict[str, dict[str, int]] = {}
 
     for task_id, task in sorted(tasks.items()):
@@ -87,7 +90,8 @@ def evaluate(tasks: dict[str, dict]) -> dict[str, Any]:
             top2 += correct2
             fit_coverage += has_fit
             bucket = by_support[len(remaining)]
-            for counts in (bucket, task_counts):
+            shape_bucket = by_output_shape[_output_shape_category(held["input"], truth)]
+            for counts in (bucket, shape_bucket, task_counts):
                 counts["examples"] += 1
                 counts["top1_correct"] += correct1
                 counts["top2_correct"] += correct2
@@ -116,8 +120,20 @@ def evaluate(tasks: dict[str, dict]) -> dict[str, Any]:
         "by_remaining_demonstrations": {
             str(k): summarize(v) for k, v in sorted(by_support.items())
         },
+        "by_output_shape": {category: summarize(counts)
+                            for category, counts in sorted(by_output_shape.items())},
         "by_task": {task_id: summarize(counts) for task_id, counts in by_task.items()},
     }
+
+
+def _output_shape_category(input_grid: list[list[int]], output_grid: list[list[int]]) -> str:
+    h, w = len(input_grid), len(input_grid[0])
+    oh, ow = len(output_grid), len(output_grid[0])
+    if (h, w) == (oh, ow):
+        return "same_shape"
+    if h * w == oh * ow:
+        return "same_area_reshaped"
+    return "larger_output" if oh * ow > h * w else "smaller_output"
 
 
 def _has_exact_fit(task: dict) -> bool:
@@ -147,6 +163,18 @@ def render_markdown(result: dict[str, Any]) -> str:
     for support, counts in result["by_remaining_demonstrations"].items():
         lines.append(
             f"| {support} | {counts['examples']} | {counts['top1_exact_match_rate']} "
+            f"| {counts['top2_exact_match_rate']} | {counts['remaining_demo_fit_coverage']} |"
+        )
+    lines.extend([
+        "",
+        "## By held-out output shape",
+        "",
+        "| Output shape relation | Held-out examples | Top-1 exact match | Top-2 exact match | Exact-fit coverage |",
+        "|---|---:|---:|---:|---:|",
+    ])
+    for category, counts in result["by_output_shape"].items():
+        lines.append(
+            f"| {category} | {counts['examples']} | {counts['top1_exact_match_rate']} "
             f"| {counts['top2_exact_match_rate']} | {counts['remaining_demo_fit_coverage']} |"
         )
     lines.extend(["", "Rates are descriptive only. The held-out examples remain part of the official training split; this protocol is not a substitute for task-disjoint validation.", ""])

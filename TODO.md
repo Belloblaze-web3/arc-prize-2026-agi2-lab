@@ -1,19 +1,18 @@
 # Project TODO
 
-## Complete — reproducible ARC-AGI-2 baseline and compliant submission artifact
+## Complete — reproducible ARC-AGI-2 baseline and compliant artifacts
 
-- [x] Provide an interpretable, deterministic solver that learns only from each task's demonstrations, validates a candidate against all demonstrations, and emits exactly two candidate grids per test input in the competition payload format.
-- [x] Include a self-contained Kaggle notebook, local submission builder, training-only data profile, solver unit tests, research notes, MIT-licensed source, and a paper-track draft under the word limit.
-- [x] Keep all performance claims honest: no Kaggle submission ID, competition score, private-evaluation result, or paper-track entry is claimed.
+- [x] Provide an interpretable, deterministic solver that learns from each task's demonstrations, validates a candidate against every demonstration, and emits exactly two candidate grids per test input in the competition payload format.
+- [x] Include a self-contained Kaggle notebook, local submission builder, training-only data profile, solver tests, research notes, MIT-licensed source, and a paper-track draft under the word limit.
+- [x] Keep performance claims honest: no Kaggle submission ID, competition score, private-evaluation result, or paper-track entry is claimed.
+- [x] Run the leave-one-demonstration-out evaluator against the official ARC-AGI-2 training directory only; save complete JSON and Markdown results, including support-count and output-shape breakdowns, and preserve the pre-extension report.
+- [x] Inspect training-only errors, find that the prior solver matched 0 of 289 held-out cases with larger-area outputs, and confirm a uniform integer cell-scale rule on seven demonstrations using only their remaining examples.
+- [x] Add demonstration-derived uniform integer cell scaling, require exact consistency with every available demonstration, rebuild the self-contained Kaggle notebook, and rerun the local suite.
+- [x] Add a Kaggle pipeline utility that prepares kernel metadata and the paper-track/cover package, validates the exact two-attempt JSON structure, and requires explicit flags before a public upload or competition file submission.
 
-## In progress — quantify within-task generalization without evaluation-set leakage
+## Pending account-owner actions — Kaggle access and publication
 
-- [ ] Run `scripts/evaluate_demonstrations.py` on the official training task files only; preserve top-1/top-2 exact-match rates, fit coverage, and support-count breakdowns as an explicitly non-leaderboard diagnostic.
-- [ ] Review the resulting error cases and identify a small, interpretable solver extension only when supported by the training-only analysis.
-- [ ] After any solver change, rebuild the self-contained Kaggle notebook and rerun all local tests.
-
-## Pending account-owner actions — Kaggle publication and submission
-
-- [ ] In Kaggle, attach the public notebook to the ARC-AGI-2 competition and execute the offline notebook after joining the competition.
-- [ ] Submit through Kaggle and record the actual submission ID, score, runtime, and hardware only after Kaggle reports them; do not tune iteratively against the public evaluation data.
-- [ ] Publish the notebook publicly and submit the paper-track write-up with its public notebook link and cover image before the official deadline.
+- [ ] Install/authenticate the official Kaggle CLI or connect an authenticated Kaggle account, then prepare the account-specific package with the Kaggle username.
+- [ ] Review the public notebook, join and accept the ARC-AGI-2 competition rules, and publish the notebook using the gated pipeline command; execute it on Kaggle with competition data attached and internet disabled.
+- [ ] Validate the Kaggle-produced `submission.json` and submit using the current competition-approved route. Record the actual submission ID, score, runtime, and hardware only after Kaggle reports them; do not tune iteratively against evaluation data.
+- [ ] Add the public notebook URL to the paper-track write-up and submit the write-up and cover through Kaggle's competition interface before the official deadline.

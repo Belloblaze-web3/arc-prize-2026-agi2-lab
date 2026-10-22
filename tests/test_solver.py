@@ -34,6 +34,19 @@ class SolverTests(unittest.TestCase):
         guesses = predict_task(task)[0]
         self.assertIn([[5]], guesses)
 
+    def test_uniform_scale_program_and_inference(self):
+        self.assertEqual(Program(scale_factor=2).apply([[1, 2], [3, 4]]),
+                         [[1, 1, 2, 2], [1, 1, 2, 2],
+                          [3, 3, 4, 4], [3, 3, 4, 4]])
+        task = {"train": [
+            {"input": [[1, 2]], "output": [[1, 1, 2, 2], [1, 1, 2, 2]]},
+            {"input": [[3], [4]], "output": [[3, 3], [3, 3], [4, 4], [4, 4]]},
+        ], "test": [{"input": [[5, 6]]}]}
+        self.assertEqual(predict_task(task)[0][0],
+                         [[5, 5, 6, 6], [5, 5, 6, 6]])
+        diagnostic = evaluate({"scale_task": task})
+        self.assertEqual(diagnostic["by_output_shape"]["larger_output"]["top2_correct"], 2)
+
     def test_output_has_two_attempts_for_each_test_input(self):
         tasks = {"task_x": {"train": [], "test": [{"input": [[1, 0]]}, {"input": [[0, 1]]}]}}
         payload = kaggle_payload(tasks)

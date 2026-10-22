@@ -16,7 +16,11 @@ RuleLab implements a compact, deterministic synthesis baseline over dihedral geo
 
 ## Training-demonstration diagnostic
 
-`scripts/evaluate_demonstrations.py` provides a leave-one-demonstration-out diagnostic. For each example in an explicitly training-named input, it infers from the task's remaining demonstrations and checks whether either of the two predictions exactly matches the held-out output. It reports top-1/top-2 match rates and whether any exact-fit program remained, overall and by number of demonstrations available to inference. This is not task-disjoint validation, competition accuracy, or a Kaggle score. The loader requires `train` in the input path and excludes known evaluation, test, solution, and sample-submission paths. No such diagnostic result is claimed until the script is run on official training files.
+`scripts/evaluate_demonstrations.py` provides a leave-one-demonstration-out diagnostic. It was run on the official `data/training` directory at upstream revision `f3283f7`, covering 1,000 tasks and 3,232 held-out demonstrations. Before adding uniform integer scaling, the solver matched 52/3,232 held-out outputs as top-1 (1.61%) and 54/3,232 as top-2 (1.67%). A shape-stratified probe found zero matches among 289 larger-area outputs. A separate train-only rule probe found seven held-out examples where the remaining demonstrations imply a uniform integer scale; all seven reproduced exactly.
+
+The solver now searches that scale operation only when dimensions of transformed demonstrations imply a shared integer factor. In the repeated full-training diagnostic, top-1 was 62/3,232 (1.92%), top-2 was 64/3,232 (1.98%), and exact-fit coverage was 60/3,232 (1.86%). It matched 7/289 larger-area examples (2.42%). Both files are saved under `reports/training_demo_diagnostic*`. These within-task training diagnostics are not task-disjoint validation, competition accuracy, or a Kaggle score. The loader requires `train` in the input path and excludes known evaluation, test, solution, and sample-submission paths. The official repository explicitly says not to iteratively tune on its public evaluation split. [3]
+
+`scripts/kaggle_pipeline.py` prepares a public, offline notebook package and the paper-track draft/cover package. It validates the two-attempt JSON shape and gates public notebook upload and file submission behind explicit command-line flags. The current sandbox has no Kaggle CLI executable or authenticated Kaggle session, so nothing has been published or submitted. Kaggle's CLI documents public notebook metadata, notebook push behavior, and file-based competition submission commands; its official command reference does not provide a paper-track write-up publishing command. Final write-up publication remains an account-owner action in Kaggle. [6] [7] [8]
 
 ## References
 
@@ -25,3 +29,6 @@ RuleLab implements a compact, deterministic synthesis baseline over dihedral geo
 [3]: https://github.com/arcprize/ARC-AGI-2 "ARC-AGI-2 Official Dataset Repository"
 [4]: https://arcprize.org/blog/arc-agi-2-technical-report "ARC-AGI-2 Technical Report"
 [5]: https://arcprize.org/blog/arc-prize-2025-results-analysis "ARC Prize 2025 Results and Analysis"
+[6]: https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels_metadata.md "Kaggle CLI kernel metadata"
+[7]: https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels.md "Kaggle CLI kernel commands"
+[8]: https://github.com/Kaggle/kaggle-cli/blob/main/docs/competitions.md "Kaggle CLI competition commands"
