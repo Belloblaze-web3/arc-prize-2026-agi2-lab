@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "ARC-AGI-2 RuleLab: Compact Program Synthesis Baseline"
+authors:
+  - family-names: "Belloblaze-web3"
+date-released: 2026-10-22
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/Belloblaze-web3/arc-prize-2026-agi2-lab"
