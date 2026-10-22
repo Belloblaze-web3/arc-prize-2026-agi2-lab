@@ -1,6 +1,10 @@
 import unittest
+import tempfile
+import json
+from pathlib import Path
 
 from solver import Program, _programs_for_task, kaggle_payload, predict_task
+from scripts.evaluate_demonstrations import evaluate, load_training_tasks, render_markdown
 
 
 class SolverTests(unittest.TestCase):
@@ -38,6 +42,31 @@ class SolverTests(unittest.TestCase):
             self.assertEqual(set(item), {"attempt_1", "attempt_2"})
             self.assertIsInstance(item["attempt_1"], list)
             self.assertIsInstance(item["attempt_2"], list)
+
+    def test_leave_one_demonstration_out_reports_top_two_and_warning(self):
+        task = {"train": [
+            {"input": [[1, 2]], "output": [[2, 1]]},
+            {"input": [[3, 4]], "output": [[4, 3]]},
+        ], "test": []}
+        result = evaluate({"synthetic": task})
+        self.assertEqual(result["examples"], 2)
+        self.assertEqual(result["overall"]["top2_exact_match_rate"], 1.0)
+        self.assertIn("not competition", result["metric_warning"].lower())
+        self.assertIn("Not competition accuracy", render_markdown(result))
+
+    def test_loader_requires_training_named_path_and_ignores_test_files(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "training_data"
+            (root / "training").mkdir(parents=True)
+            (root / "evaluation").mkdir()
+            task = {"train": [{"input": [[0]], "output": [[0]]}],
+                    "test": [{"input": [[1]]}]}
+            (root / "training" / "train_task.json").write_text(json.dumps(task))
+            (root / "evaluation" / "test_task.json").write_text(json.dumps(task))
+            loaded = load_training_tasks(root)
+            self.assertEqual(list(loaded), ["train_task"])
+            with self.assertRaises(ValueError):
+                load_training_tasks(Path(temp) / "evaluation")
 
 
 if __name__ == "__main__":

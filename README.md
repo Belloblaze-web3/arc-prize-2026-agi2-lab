@@ -12,6 +12,7 @@ This repository is a research prototype, not a leaderboard claim. No Kaggle scor
 - `notebooks/arc_prize_2026_rulelab.ipynb` — self-contained Kaggle notebook with the solver inlined, data discovery, inference, and `submission.json` export.
 - `tests/test_solver.py` — deterministic unit tests for transformations and exact output formatting.
 - `scripts/profile_training.py` and `reports/training_profile/` — reproducible training-only data profile with CSVs, observations, and a grid-shape chart. It does not read evaluation tasks.
+- `scripts/evaluate_demonstrations.py` — leave-one-demonstration-out diagnostics over an explicitly training-named path, with top-1/top-2 exact match and fit-coverage breakdowns. These are not competition scores.
 - `scripts/build_notebook.py` — rebuilds the self-contained notebook from `solver.py`.
 - `writeup/arc_prize_2026_paper_track.md` — draft Kaggle paper-track write-up (under the 1,500-word limit; competition results are intentionally left unclaimed).
 - `docs/research_notes.md` — sources and verified competition constraints.
@@ -24,9 +25,12 @@ Python 3.10+ is recommended. The solver itself uses only the Python standard lib
 ```bash
 python -m unittest discover -s tests -v
 python scripts/make_submission.py /path/to/task_json_directory submission.json
+python scripts/evaluate_demonstrations.py /path/to/arc-agi_training_challenges.json
 ```
 
 The submission script accepts individual task JSON files or a single JSON mapping task IDs to task objects. It ignores files that are not ARC tasks.
+
+The diagnostic accepts only an input path containing `train` in its name or a parent directory. It excludes known evaluation, test, solution, and sample-submission paths. Its leave-one-demonstration-out score asks whether a rule inferred from a task's other training examples predicts the held-out demonstration; it is neither task-disjoint validation nor Kaggle test accuracy. Do not use Kaggle evaluation files as input.
 
 ## Kaggle use
 

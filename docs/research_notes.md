@@ -14,6 +14,10 @@ Checked on 22 October 2026. The competition schedule or platform instructions ma
 
 RuleLab implements a compact, deterministic synthesis baseline over dihedral geometry, background cropping, and globally consistent colour mapping. It has not been run against the private/semi-private competition data, does not have a Kaggle score or submission ID, and is not yet a Kaggle Paper Track entry. No numeric accuracy claim is made. The included notebook is a self-contained public-notebook candidate; publication and competition submission must be completed by the account owner in Kaggle.
 
+## Training-demonstration diagnostic
+
+`scripts/evaluate_demonstrations.py` provides a leave-one-demonstration-out diagnostic. For each example in an explicitly training-named input, it infers from the task's remaining demonstrations and checks whether either of the two predictions exactly matches the held-out output. It reports top-1/top-2 match rates and whether any exact-fit program remained, overall and by number of demonstrations available to inference. This is not task-disjoint validation, competition accuracy, or a Kaggle score. The loader requires `train` in the input path and excludes known evaluation, test, solution, and sample-submission paths. No such diagnostic result is claimed until the script is run on official training files.
+
 ## References
 
 [1]: https://arcprize.org/competitions/2026/arc-agi-2 "ARC Prize 2026 ARC-AGI-2 Competition"
